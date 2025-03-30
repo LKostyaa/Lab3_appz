@@ -1,2 +1,5 @@
-﻿// See https://aka.ms/new-console-template for more information
-Console.WriteLine("Hello, World!");
+﻿using LAB2_APPZ;
+using System.Runtime.CompilerServices;
+
+AppManager appManager = new AppManager();
+appManager.Client();
