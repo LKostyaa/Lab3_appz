@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LAB2_APPZ.Games
+namespace Lab3_appz.Models
 {
-    class Simulator : Game
+    class AnotherGenreGame : Game
     {
-        public Simulator(string name, string platform, int cpu_requirement, int ram_requirement, int vram_requirement, int hdd_requirement, string[] logindata)
+        public AnotherGenreGame(string name, string genre, string platform, int cpu_requirement, int ram_requirement, int vram_requirement, int hdd_requirement, string[] logindata)
             : base(name,
-                   "Simulator",
+                   genre,
                    platform,
                    cpu_requirement,
                    ram_requirement,

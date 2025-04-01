@@ -1,4 +1,4 @@
-﻿using LAB2_APPZ;
+﻿using Lab3_appz;
 using System.Runtime.CompilerServices;
 
 AppManager appManager = new AppManager();

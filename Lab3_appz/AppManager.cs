@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using LAB2_APPZ.Games;
 using Lab3_appz.Events;
+using Lab3_appz.Models;
+using Lab3_appz.Factories;
 
-namespace LAB2_APPZ
+namespace Lab3_appz
 {
     class AppManager : IObserver
     {
@@ -19,32 +16,28 @@ namespace LAB2_APPZ
 
         public AppManager()
         {
-            games.Add(new OnlineAdventures("OnlineAdventures", "Console", 4, 8, 2, 0, new string[] { "Admin", "1234" }));
-            games.Add(new Shooter("Shooter", "Desktop", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
-            games.Add(new Simulator("Simulator", "Mobile", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
+            games.Add(new OnlineAdventuresFactory().CreateGame("Online Adventures", "Console", 4, 8, 2, 0, new string[] { "Admin", "1234" }));
+            games.Add(new ShooterFactory().CreateGame("Shooter", "Desktop", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
+            games.Add(new SimulatorFactory().CreateGame("Simulator", "Mobile", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
 
             GameEventManager.Instance.Attach(this);
-}
+        }
+
         public void Update(string message)
         {
             Printer.Print(message);
         }
+
         public void Client()
         {
-            while (true)
-            {
-                Printer.Print("Enter your characteristics before starting");
-                Console.WriteLine("Enter how many cores has your device: ");
-                cpu = GetValidatedInput.GetValidatedInt("CPU cores", 2, 24);
-                Console.WriteLine("Enter how gigabytes of RAM cores has your device: ");
-                ram = GetValidatedInput.GetValidatedInt("RAM", 1, 256);
-                Console.WriteLine("Enter how many gigabytes of VRAM has your device: ");
-                vram = GetValidatedInput.GetValidatedInt("VRAM", 1, 80);
-                Console.WriteLine("Enter how many gigabytes of memory(HDD) has your device: ");
-                hdd = GetValidatedInput.GetValidatedInt("HDD", 1, 10000);
-                break;
-            }
-
+            Console.WriteLine("Enter how many CPU cores your device has: ");
+            cpu = GetValidatedInput.GetValidatedInt("CPU cores", 2, 24);
+            Console.WriteLine("Enter how many gigabytes of RAM your device has: ");
+            ram = GetValidatedInput.GetValidatedInt("RAM", 1, 256);
+            Console.WriteLine("Enter how many gigabytes of VRAM your device has: ");
+            vram = GetValidatedInput.GetValidatedInt("VRAM", 1, 80);
+            Console.WriteLine("Enter how many gigabytes of HDD your device has: ");
+            hdd = GetValidatedInput.GetValidatedInt("HDD", 1, 10000);
 
             while (true)
             {
@@ -67,37 +60,24 @@ namespace LAB2_APPZ
                         return;
                 }
             }
-
         }
-       
 
         public void CreateGame()
         {
-            string name;
-            string genre;
-            string platform;
-            int cpu_requirement;
-            int ram_requirement;
-            int vram_requirement;
-            int hdd_requirement;
-            string login;
-            string password;
-            //string name, string genre, string platform, int cpu_requirement,int ram_requirement, int vram_requirement, int hdd_requirememnt, string[] logindata
-            name = GetValidatedInput.GetValidatedString("name");
-            genre = GetValidatedInput.GetValidatedString("genre");
-            platform = GetValidatedInput.GetValidatedPlatform();
-            cpu_requirement = GetValidatedInput.GetValidatedInt("CPU Requirement", 2, 24);
-            ram_requirement = GetValidatedInput.GetValidatedInt("RAM Requirement", 1, 256);
-            vram_requirement = GetValidatedInput.GetValidatedInt("VRAM Requirement", 1, 60);
-            hdd_requirement = GetValidatedInput.GetValidatedInt("HDD Requirement", 0, 1000);
-            login = GetValidatedInput.GetValidatedString("login");
-            password = GetValidatedInput.GetValidatedString("password");
+            string name = GetValidatedInput.GetValidatedString("name");
+            string genre = GetValidatedInput.GetValidatedString("genre");
+            string platform = GetValidatedInput.GetValidatedPlatform();
+            int cpu_requirement = GetValidatedInput.GetValidatedInt("CPU Requirement", 2, 24);
+            int ram_requirement = GetValidatedInput.GetValidatedInt("RAM Requirement", 1, 256);
+            int vram_requirement = GetValidatedInput.GetValidatedInt("VRAM Requirement", 1, 60);
+            int hdd_requirement = GetValidatedInput.GetValidatedInt("HDD Requirement", 0, 1000);
+            string login = GetValidatedInput.GetValidatedString("login");
+            string password = GetValidatedInput.GetValidatedString("password");
 
-            games.Add(new AnotherGenreGame(name, genre, platform, cpu_requirement, ram_requirement, vram_requirement, hdd_requirement, new string[] { login, password }));
+            games.Add(new AnotherGenreFactory(genre).CreateGame(name, platform, cpu_requirement, ram_requirement, vram_requirement, hdd_requirement, new string[] { login, password }));
             Printer.Print($"Game {name} was successfully added to the library!");
-
-
         }
+
         public void ShowLibrary()
         {
             while (true)
@@ -107,9 +87,8 @@ namespace LAB2_APPZ
                 foreach (var game in games)
                 {
                     n++;
-                    Console.WriteLine(n + "." + game.ToString());
+                    Console.WriteLine(n + ". " + game.ToString());
                 }
-
 
                 Console.WriteLine("Choose a game: ");
                 var choice = Console.ReadKey().KeyChar;
@@ -122,11 +101,10 @@ namespace LAB2_APPZ
                 else
                 {
                     Printer.Print("Error! Try to choose game again!");
-                    continue;
                 }
             }
-
         }
+
         public void GameMenu(Game game)
         {
             while (true)
@@ -153,26 +131,11 @@ namespace LAB2_APPZ
                         game.InstallGame(hdd);
                         break;
                     case '3':
-                        if (!game.is_logged_in)
-                        {
-                            string login, password;
-                            while (true)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Enter your login: ");
-                                login = Console.ReadLine();
-                                if (String.IsNullOrEmpty(login)) continue;
-                                Console.WriteLine("Enter your password: ");
-                                password = Console.ReadLine();
-                                if (String.IsNullOrEmpty(password)) continue;
-                                break;
-                            }
-                            game.Login(login, password);
-                        }
-                        else
-                        {
-                            Printer.Print("You are already logged in.");
-                        }
+                        Console.WriteLine("Enter your login: ");
+                        string login = Console.ReadLine();
+                        Console.WriteLine("Enter your password: ");
+                        string password = Console.ReadLine();
+                        game.Login(login, password);
                         break;
                     case '4':
                         game.ConnectGamepad();
@@ -184,54 +147,17 @@ namespace LAB2_APPZ
                         game.StopTranslation();
                         break;
                     case '7':
-                        if (game.is_running)
-                        {
-                            string savename;
-                            while (true)
-                            {
-                                Console.Clear();
-                                Console.WriteLine("Enter the name of save: ");
-                                savename = Console.ReadLine();
-                                if (String.IsNullOrEmpty(savename)) { Console.WriteLine("Error! The name can't be null, try again"); continue; }
-                                break;
-                            }
-                            game.SaveGame(savename);
-                        }
-                        else
-                        {
-                            Printer.Print("Error: Launch the game first");
-                        }
+                        Console.WriteLine("Enter the name of save: ");
+                        string savename = Console.ReadLine();
+                        game.SaveGame(savename);
                         break;
                     case '8':
                         game.ShowSaves();
                         break;
                     case '9':
-                        bool stop_cycle = true;
-                        while (stop_cycle)
-                        {
-                            Console.Clear();
-                            Console.WriteLine("1. Rate the game\n" +
-                                              "2. Show game rating\n" +
-                                              "3. Come back");
-                            var result = Console.ReadKey().KeyChar;
-                            switch (result)
-                            {
-                                case '1':
-                                    Console.Clear();
-                                    Console.WriteLine("Enter the rating (1-10)");
-                                    int rating = GetValidatedInput.GetValidatedInt("Rating", 1, 10);
-
-
-                                    game.RateGame(rating);
-                                    break;
-                                case '2':
-                                    game.ShowRating();
-                                    break;
-                                case '3':
-                                    stop_cycle = false;
-                                    break;
-                            }
-                        }
+                        Console.WriteLine("Enter the rating (1-10): ");
+                        int rating = GetValidatedInput.GetValidatedInt("Rating", 1, 10);
+                        game.RateGame(rating);
                         break;
                     case '0':
                         if (game.is_running)

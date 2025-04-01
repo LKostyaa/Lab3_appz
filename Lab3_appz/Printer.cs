@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LAB2_APPZ
+namespace Lab3_appz
 {
     static class Printer
     {

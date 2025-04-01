@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LAB2_APPZ.Games
+namespace Lab3_appz.Models
 {
     class Shooter : Game
     {

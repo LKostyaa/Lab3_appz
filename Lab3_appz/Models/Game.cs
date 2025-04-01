@@ -7,10 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
-using LAB2_APPZ;
 using Lab3_appz.Events;
 
-namespace LAB2_APPZ.Games
+namespace Lab3_appz.Models
 {
     abstract class Game
     {
@@ -260,7 +259,7 @@ namespace LAB2_APPZ.Games
         }
         public override string ToString()
         {
-            return name;
+            return $"Name: {name} // Genre: {genre}";
         }
     }
 
