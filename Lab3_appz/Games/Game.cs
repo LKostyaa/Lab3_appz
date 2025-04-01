@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using LAB2_APPZ;
+using Lab3_appz.Events;
 
 namespace LAB2_APPZ.Games
 {
@@ -40,6 +41,7 @@ namespace LAB2_APPZ.Games
         private string[] logindata = new string[2];
         private List<string> saves = new List<string>();
 
+        protected GameEventManager eventManager;
         public Game(string name, string genre, string platform, int cpu_requirement, int ram_requirement, int vram_requirement, int hdd_requirememnt, string[] logindata)
         {
             this.name = name;
@@ -52,7 +54,7 @@ namespace LAB2_APPZ.Games
             this.logindata = logindata;
 
 
-
+            eventManager = GameEventManager.Instance;
             if (platform.ToLower() == "console")
             {
                 gamepad_requirement = true;
@@ -67,40 +69,40 @@ namespace LAB2_APPZ.Games
         {
             if (is_installed)
             {
-                ErrorLogger.LogError("The game is alredy installed");
+                eventManager.LogError("The game is alredy installed");
                 return;
             }
             if (is_online)
             {
-                ErrorLogger.LogError("The game is online and doesn't need to be installed");
+                eventManager.LogError("The game is online and doesn't need to be installed");
                 return;
             }
             if (avaiblehdd < hdd_requirement)
             {
-                ErrorLogger.LogError($"not enough space for installing {name}");
+                eventManager.LogError($"not enough space for installing {name}");
                 return;
             }
             is_installed = true;
             avaiblehdd -= hdd_requirement;
 
             //================================EVENT============================
-            GameEvents.GameInstalled(name);
+            eventManager.GameInstalled(name);
         }
         public void Login(string username, string password)
         {
             if (is_logged_in)
             {
-                ErrorLogger.LogError("You're already logged in!");
+                eventManager.LogError("You're already logged in!");
                 return;
             }
             if (logindata[0] == username && logindata[1] == password)
             {
                 is_logged_in = true;
                 //=======================================EVENT================
-                GameEvents.UserLoggedIn(username);
+                eventManager.UserLoggedIn(username);
                 return;
             }
-            ErrorLogger.LogError("your password or login doesn't match");
+            eventManager.LogError("your password or login doesn't match");
         }
         public void CheckRequirements(int cpu, int ram, int vram)
         {
@@ -110,7 +112,7 @@ namespace LAB2_APPZ.Games
             }
             else
             {
-                ErrorLogger.LogError("Your computer's too weak for this game :(");
+                eventManager.LogError("Your computer's too weak for this game :(");
                 return;
             }
         }
@@ -120,36 +122,36 @@ namespace LAB2_APPZ.Games
             {
                 is_gamepad_connected = true;
                 //==========================EVENT=======================
-                GameEvents.GamepadConnected();
+                eventManager.GamepadConnected();
                 return;
             }
             if (is_gamepad_connected)
             {
-                ErrorLogger.LogError("Gamepad was already connected!");
+                eventManager.LogError("Gamepad was already connected!");
                 return;
             }
-            ErrorLogger.LogError("You don't need to connect gamepad!");
+            eventManager.LogError("You don't need to connect gamepad!");
         }
         public void LaunchGame()
         {
             if (is_running)
             {
-                ErrorLogger.LogError("The game is already launched!!!");
+                eventManager.LogError("The game is already launched!!!");
                 return;
             }
             if (gamepad_requirement && !is_gamepad_connected)
             {
-                ErrorLogger.LogError("connect the gamepad!!!");
+                eventManager.LogError("connect the gamepad!!!");
                 return;
             }
             if (!is_installed && !is_online)
             {
-                ErrorLogger.LogError($" the game {name} is not installed");
+                eventManager.LogError($" the game {name} is not installed");
                 return;
             }
             if (!is_logged_in)
             {
-                ErrorLogger.LogError($" you'd login before opening {name}");
+                eventManager.LogError($" you'd login before opening {name}");
                 return;
             }
             if (is_online)
@@ -159,7 +161,7 @@ namespace LAB2_APPZ.Games
             is_running = true;
 
             //=============================EVENT=========================
-            GameEvents.GameLaunched(name);
+            eventManager.GameLaunched(name);
         }
         public void CloseGame()
         {
@@ -168,31 +170,31 @@ namespace LAB2_APPZ.Games
                 is_running = false;
                 is_logged_in = false;
                 //==============================EVENT=============================
-                GameEvents.GameClosed(name);
+                eventManager.GameClosed(name);
                 return;
             }
-            ErrorLogger.LogError(" The game isn't launched!");
+            eventManager.LogError(" The game isn't launched!");
         }
         public void StartTranslation()
         {
             if (!is_running)
             {
-                ErrorLogger.LogError(" You'd launch the game first.");
+                eventManager.LogError(" You'd launch the game first.");
                 return;
             }
             if (!is_translated && platform == "mobile" || platform == "console")
             {
                 is_translated = true;
                 //======================Event===========================
-                GameEvents.TranslationStarted(name);
+                eventManager.TranslationStarted(name);
                 return;
             }
             if (is_translated)
             {
-                ErrorLogger.LogError(" The translation is already started!");
+                eventManager.LogError(" The translation is already started!");
                 return;
             }
-            ErrorLogger.LogError(" You can't start translation.");
+            eventManager.LogError(" You can't start translation.");
         }
         public void StopTranslation()
         {
@@ -200,19 +202,19 @@ namespace LAB2_APPZ.Games
             {
                 is_translated = false;
                 //=============================EVENT============================
-                GameEvents.TranslationStopped(name);
+                eventManager.TranslationStopped(name);
                 return;
             }
             if (!is_translated)
             {
-                ErrorLogger.LogError(" Start the translation first!");
+                eventManager.LogError(" Start the translation first!");
             }
         }
         public void SaveGame(string name)
         {
             saves.Add(name);
             //=====================EVENT============================
-            GameEvents.SaveMade(name);
+            eventManager.SaveMade(name);
         }
         public void ShowSaves()
         {
@@ -231,18 +233,18 @@ namespace LAB2_APPZ.Games
                 if (k > 0 && k < n)
                 {
                     //==========================EVENT=============================
-                    GameEvents.SaveLoaded(saves[k - 1]);
+                    eventManager.SaveLoaded(saves[k - 1]);
                 }
                 else
                 {
-                    ErrorLogger.LogError(" enter the correct num and try again");
+                    eventManager.LogError(" enter the correct num and try again");
                 }
 
 
             }
             else
             {
-                ErrorLogger.LogError(" Make a saving first");
+                eventManager.LogError(" Make a saving first");
             }
         }
         public void RateGame(int rating)
@@ -250,7 +252,7 @@ namespace LAB2_APPZ.Games
             ratings.Add(rating);
 
             //=============================EVENTS=======================
-            GameEvents.GameRated(name, averagerating);
+            eventManager.GameRated(name, averagerating);
         }
         public void ShowRating()
         {

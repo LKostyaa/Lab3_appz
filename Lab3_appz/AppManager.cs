@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using LAB2_APPZ.Games;
+using Lab3_appz.Events;
 
 namespace LAB2_APPZ
 {
-    class AppManager
+    class AppManager : IObserver
     {
         private List<Game> games = new List<Game>();
         public int cpu { get; private set; }
@@ -22,26 +23,11 @@ namespace LAB2_APPZ
             games.Add(new Shooter("Shooter", "Desktop", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
             games.Add(new Simulator("Simulator", "Mobile", 4, 8, 2, 10, new string[] { "Admin", "1234" }));
 
-
-            //============ПІДПИСКА НА ІВЕНТИ===========================
-            GameEvents.OnGameInstalled += HandleGameInstalled;
-
-            GameEvents.OnGameLaunched += HandleGameLaunched;
-            GameEvents.OnGameClosed += HandleGameClosed;
-
-            GameEvents.OnGameRated += HandleGameRated;
-
-            GameEvents.OnTranslationStarted += HandleTranslationStarted;
-            GameEvents.OnTranslationStopped += HandleTranslationStopped;
-
-            GameEvents.OnSaveLoaded += HandleSaveLoaded;
-            GameEvents.OnSavingMade += HandleSavingMade;
-
-            GameEvents.OnGamePadConnected += HandleGamepadConnected;
-
-            GameEvents.OnUserLoggedIn += HandleUserLoggedIn;
-
-            ErrorLogger.OnErrorLogged += ErrorHandle;
+            GameEventManager.Instance.Attach(this);
+}
+        public void Update(string message)
+        {
+            Printer.Print(message);
         }
         public void Client()
         {
@@ -83,52 +69,7 @@ namespace LAB2_APPZ
             }
 
         }
-        private void HandleGameInstalled(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleGameLaunched(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleGameClosed(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleGameRated(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleTranslationStarted(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleTranslationStopped(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleSaveLoaded(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleSavingMade(string message)
-        {
-            Printer.Print(message);
-        }
-        private void HandleGamepadConnected(string message)
-        {
-            Printer.Print(message);
-        }
-        //===============================
-        private void ErrorHandle(string message)
-        {
-            Printer.Print(message);
-        }
-        //============
-        private void HandleUserLoggedIn(string message)
-        {
-            Printer.Print(message);
-        }
+       
 
         public void CreateGame()
         {

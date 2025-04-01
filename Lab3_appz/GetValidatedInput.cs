@@ -1,32 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Lab3_appz.Events;
+using System;
 
 namespace LAB2_APPZ
 {
     static class GetValidatedInput
     {
+        private static GameEventManager eventManager = GameEventManager.Instance;
+
         public static string GetValidatedString(string parameter)
         {
-            String text;
+            string text;
             Console.Clear();
             while (true)
             {
-
                 Console.WriteLine($"Enter the {parameter} of the game: ");
                 text = Console.ReadLine();
-                if (String.IsNullOrEmpty(text))
+                if (string.IsNullOrEmpty(text))
                 {
-                    ErrorLogger.LogError($" Try to enter the {parameter} again");
+                    eventManager.LogError($"Try to enter the {parameter} again");
                     continue;
                 }
                 break;
             }
             return text;
         }
+
         public static string GetValidatedPlatform()
         {
             string platform;
@@ -41,38 +39,38 @@ namespace LAB2_APPZ
                 }
                 else
                 {
-                    ErrorLogger.LogError(" Choose one of these platforms: (mobile/desktop/console)");
+                    eventManager.LogError("Choose one of these platforms: (mobile/desktop/console)");
                     continue;
                 }
             }
             return platform;
         }
+
         public static int GetValidatedInt(string parameter, int minvalue, int maxvalue)
         {
             int value;
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine($"Enter the {parameter}(from {minvalue} to {maxvalue}): ");
+                Console.WriteLine($"Enter the {parameter} (from {minvalue} to {maxvalue}): ");
                 try
                 {
                     value = int.Parse(Console.ReadLine());
                 }
                 catch
                 {
-                    ErrorLogger.LogError(" The value must be int");
+                    eventManager.LogError("The value must be an integer");
                     continue;
                 }
-                if (value <= maxvalue && value >= minvalue)
+                if (value >= minvalue && value <= maxvalue)
                 {
                     break;
                 }
                 else
                 {
-                    ErrorLogger.LogError($" Value must be from {minvalue} to {maxvalue}!");
+                    eventManager.LogError($"Value must be from {minvalue} to {maxvalue}!");
                     continue;
                 }
-
             }
             return value;
         }
